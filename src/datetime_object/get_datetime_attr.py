@@ -1,7 +1,7 @@
 from datetime import datetime
 
-def get_datetime_attr(year, month, day, hours, minutes, seconds):
-    user_datetime = datetime(year, month, day, hours, minutes, seconds)
+def get_datetime_attr(nums):
+    user_datetime = datetime(*nums)
     return f"Дата: {user_datetime.date()}\nВремя: {user_datetime.time()}"
 
 
@@ -10,8 +10,8 @@ def read_input():
 
 
 def main():
-    year, month, day, hours, minutes, seconds = read_input()
-    print(get_datetime_attr(year, month, day, hours, minutes, seconds))
+    nums = read_input()
+    print(get_datetime_attr(nums))
 
 if __name__ == "__main__":
     main()

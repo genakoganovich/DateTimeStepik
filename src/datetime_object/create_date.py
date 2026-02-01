@@ -1,20 +1,17 @@
 from datetime import date
 
 
-def create_date(year, month, day):
-    return date(year, month, day)
+def create_date(nums):
+    return date(*nums)
 
 
 def read_input():
-    year = int(input())
-    month = int(input())
-    day = int(input())
-    return year, month, day
+    return [int(input()) for _ in range(3)]
 
 
 def main():
-    year, month, day = read_input()
-    print(create_date(year, month, day))
+    nums = read_input()
+    print(create_date(nums))
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 
 
-def create_dt_utc(year, month, day, hours, minutes):
-    dt = datetime(year, month, day, hours, minutes, tzinfo=timezone.utc)
+def create_dt_utc(numbers):
+    dt = datetime(*numbers, tzinfo=timezone.utc)
     return dt
 
 
@@ -11,8 +11,8 @@ def read_input():
 
 
 def main():
-    year, month, day, hours, minutes = read_input()
-    print(create_dt_utc(year, month, day, hours, minutes))
+    numbers = read_input()
+    print(create_dt_utc(numbers))
 
 if __name__ == "__main__":
     main()

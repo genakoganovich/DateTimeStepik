@@ -11,13 +11,13 @@ def get_duration(t_beg_string, t_end_string):
 
 
 def read_input():
-    return input()
+    return [input() for _ in range(2)]
 
 
 def main():
-    t_beg_string = read_input()
-    t_end_string = read_input()
-    print(get_duration(t_beg_string, t_end_string))
+    t_strings = read_input()
+    print(get_duration(*t_strings))
+
 
 if __name__ == "__main__":
     main()

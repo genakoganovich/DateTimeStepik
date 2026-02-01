@@ -1,18 +1,15 @@
 from datetime import time
 
-def set_alarm_clock(hour, minute, second):
-    return time(hour, minute, second)
+def set_alarm_clock(nums):
+    return time(*nums)
 
 
 def read_input():
-    hour = int(input())
-    minute = int(input())
-    second = int(input())
-    return hour, minute, second
+    return [int(input()) for _ in range(3)]
 
 def main():
-    hour, minute, second = read_input()
-    print(set_alarm_clock(hour, minute, second))
+    nums = read_input()
+    print(set_alarm_clock(nums))
 
 if __name__ == "__main__":
     main()
