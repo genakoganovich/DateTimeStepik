@@ -1,12 +1,29 @@
 import calendar
+from datetime import datetime
+from zoneinfo import ZoneInfo
+from collections import defaultdict
 
 class EventStorage:
     def __init__(self):
-        self.events = {}  # (year, month, day) -> list[str]
+        self.events = defaultdict(list)  # dt -> list[str]
 
+    def add_event(self, date, title):
+        self.events[date].append(title)
+
+    def get_events(self, date):
+        return self.events.get(date, [])
 
 
 class CalendarApp:
+    def __init__(self):
+        self.storage = EventStorage()
+        self.tz = ZoneInfo("UTC")
+        self.commands = ["show <год> <месяц>",
+                         "add",
+                         "view <год> <месяц> <день>",
+                         "help",
+                         "exit"]
+
     def run(self):
         self.show_current_month()
 
@@ -35,6 +52,8 @@ class CalendarApp:
             self.cmd_add()
         elif cmd == "view":
             self.cmd_view(parts)
+        elif cmd == "help":
+            self.cmd_help()
         else:
             print("Неизвестная команда")
 
@@ -48,7 +67,8 @@ class CalendarApp:
 
     def cmd_add(self):
         print("Добавление события")
-        date = input("Дата (YYYY-MM-DD): ")
+        nums = tuple(map(int, input("Дата (YYYY MM DD): ").split()))
+        date = datetime(*nums, tzinfo=self.tz)
         title = input("Название: ")
 
         self.storage.add_event(date, title)
@@ -59,14 +79,30 @@ class CalendarApp:
             print("Использование: view <год> <месяц> <день>")
             return
 
-        year, month, day = map(int, parts[1:])
-        events = self.storage.get_events(year, month, day)
+        nums = map(int, parts[1:])
+        date = datetime(*nums, tzinfo=self.tz)
+        events = self.storage.get_events(date)
 
         if not events:
             print("Событий нет")
         else:
             for e in events:
                 print("-", e)
+
+    def cmd_help(self):
+        print(self.commands)
+
+    def cmd_unknown(self):
+        print("Неизвестная команда")
+        self.cmd_help()
+
+    def show_current_month(self):
+        now = datetime.now(self.tz)
+        print(calendar.month(now.year, now.month))
+
+    def show_month(self, year, month):
+        print(calendar.month(year, month))
+
 
 
 def main():

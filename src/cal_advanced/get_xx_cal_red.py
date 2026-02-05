@@ -1,12 +1,13 @@
 import calendar
 import sys
-
+from colorama import Fore, Style, init
 
 class CustomTextCalendar(calendar.TextCalendar):
     def __init__(self, custom_day, firstweekday=0):
         super().__init__(firstweekday)
         self.custom_day = custom_day
         self.tag = 'XX'
+        self.color = Fore.RED
 
     def formatday(self, day, weekday, width):
         """
@@ -15,11 +16,14 @@ class CustomTextCalendar(calendar.TextCalendar):
         if day == 0:
             s = ''
         elif day == self.custom_day:
-            s = self.tag
+            s = set_color(day, Fore.RED)
         else:
             s = '%2i' % day  # right-align single-digit days
         return s.center(width)
 
+
+def set_color(s, color):
+    return f"{Style.BRIGHT}{color}{s}{Style.RESET_ALL}"
 
 def get_xx_cal(nums):
     year, month, day = nums
