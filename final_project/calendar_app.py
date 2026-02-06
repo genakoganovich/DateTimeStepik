@@ -1,28 +1,24 @@
 import calendar
-from datetime import datetime
-from zoneinfo import ZoneInfo
-from collections import defaultdict
+from datetime import date
 
-class EventStorage:
-    def __init__(self):
-        self.events = defaultdict(list)  # dt -> list[str]
-
-    def add_event(self, date, title):
-        self.events[date].append(title)
-
-    def get_events(self, date):
-        return self.events.get(date, [])
+from final_project.event import Event
+from final_project.event_storage import EventStorage
+from final_project.red_text_calendar import RedTextCalendar
 
 
 class CalendarApp:
+    COMMANDS = (
+        "show <год> <месяц>",
+        "add",
+        "view <год> <месяц> <день>",
+        "help",
+        "exit",
+    )
+
+
     def __init__(self):
         self.storage = EventStorage()
-        self.tz = ZoneInfo("UTC")
-        self.commands = ["show <год> <месяц>",
-                         "add",
-                         "view <год> <месяц> <день>",
-                         "help",
-                         "exit"]
+        self.red_text_calendar = RedTextCalendar()
 
     def run(self):
         self.show_current_month()
@@ -68,10 +64,12 @@ class CalendarApp:
     def cmd_add(self):
         print("Добавление события")
         nums = tuple(map(int, input("Дата (YYYY MM DD): ").split()))
-        date = datetime(*nums, tzinfo=self.tz)
-        title = input("Название: ")
-
-        self.storage.add_event(date, title)
+        event_date = date(*nums)
+        hour, minute = map(int, input("Время (HH:MM): ").split(':'))
+        event_datetime = Event.create_datetime(*nums, hour, minute)
+        description = input("Название: ")
+        event = Event.create_event((event_datetime, description))
+        self.storage.add_event(event_date, event)
         print("Событие добавлено")
 
     def cmd_view(self, parts):
@@ -80,8 +78,8 @@ class CalendarApp:
             return
 
         nums = map(int, parts[1:])
-        date = datetime(*nums, tzinfo=self.tz)
-        events = self.storage.get_events(date)
+        event_date = date(*nums)
+        events = self.storage.get_events(event_date)
 
         if not events:
             print("Событий нет")
@@ -90,25 +88,17 @@ class CalendarApp:
                 print("-", e)
 
     def cmd_help(self):
-        print(self.commands)
+        print(self.COMMANDS)
 
     def cmd_unknown(self):
         print("Неизвестная команда")
         self.cmd_help()
 
     def show_current_month(self):
-        now = datetime.now(self.tz)
-        print(calendar.month(now.year, now.month))
+        now = Event.create_now()
+        self.show_month(now.year, now.month)
 
     def show_month(self, year, month):
-        print(calendar.month(year, month))
-
-
-
-def main():
-    calendar_app = CalendarApp()
-    calendar_app.run()
-
-
-if __name__ == "__main__":
-    main()
+        self.red_text_calendar.set_red_days(self.storage.get_days(year, month))
+        print(self.red_text_calendar.formatmonth(year, month))
+        self.red_text_calendar.reset_red_days()
